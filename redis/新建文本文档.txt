@@ -1,0 +1,5 @@
+https://redis.io/documentation、
+algorithms:算法
+
+precise algorithms:精确算法
+approximated algorithms:近似算法

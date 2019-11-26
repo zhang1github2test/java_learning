@@ -130,3 +130,78 @@ public class AopConfig {
 
   ### 三、`aop原理` 
 
+   通过`@EnableAspectJAutoProxy` 注解来导入 ` AspectJAutoProxyRegistrar` 组件。
+
+  该组件通过调用`org.springframework.context.annotation.AspectJAutoProxyRegistrar#registerBeanDefinitions ` 方法来注册一个 `AnnotationAwareAspectJAutoProxyCreator` 后置处理器，其在容器的名称为：`org.springframework.aop.config.internalAutoProxyCreator` 
+
+  ```java
+  	AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry);
+  
+  		AnnotationAttributes enableAspectJAutoProxy =
+  				AnnotationConfigUtils.attributesFor(importingClassMetadata, EnableAspectJAutoProxy.class);
+  		if (enableAspectJAutoProxy != null) {
+  			if (enableAspectJAutoProxy.getBoolean("proxyTargetClass")) {
+  				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
+  			}
+  			if (enableAspectJAutoProxy.getBoolean("exposeProxy")) {
+  				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
+  			}
+  		}
+  ```
+
+  真正执行注册`AnnotationAwareAspectJAutoProxyCreator` 组件的方法：
+
+```java
+
+	@Nullable
+	private static BeanDefinition registerOrEscalateApcAsRequired(
+			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
+
+		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+
+		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
+			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
+			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
+				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
+				int requiredPriority = findPriorityForClass(cls);
+				if (currentPriority < requiredPriority) {
+					apcDefinition.setBeanClassName(cls.getName());
+				}
+			}
+			return null;
+		}
+
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
+		beanDefinition.setSource(source);
+		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
+		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
+		return beanDefinition;
+	}
+```
+
+
+
+`AnnotationAwareAspectJAutoProxyCreator` 类的继承结构如下：
+
+![1574693189114](assets/1574693189114.png)
+
+  从上面`UML` 图可以看出，其实现了`BenPostProcessor` 接口和`BeanFactoryAwre` 接口。必然会有  ` setBeanFacotry`方法 及与`beanPostProcessor` 接口相关的方法。在这些方法上打上断点然后调试
+
+![1574694132279](assets/1574694132279.png)
+
+ 整个的流程如下：
+
+* 1)、：传入配置类，创建`IOC` 容器 `new AnnotationConfigApplicationContext(AopConfig.class);`  
+
+* 2)、注册配置类，调用refresh()刷新容器
+
+* 3）、注册bean的后置处理器来拦截bean的创建 ：`registerBeanPostProcessors(beanFactory);` 
+  * 1、先获取`IOC` 容器中的所有的`BeanPostProcessor` 的定义的名称
+  * 2、给容器中加别BeanPostProcessor
+  * 3、优先注册实现了PriorityOrdered接口的BeanPostPrcessor
+  * 4、再给容器总注册实现了Order接口的BeanPostProcessor
+  * 5、注册没实现order接口的BeanPostProcessor
+  * 6、注册`BeanPostProcessor` ，实际上就是创建BeanPostProcessor对象，保存在容器中；
+    * 1）、创建`internalAutoProxyCreator`  
+

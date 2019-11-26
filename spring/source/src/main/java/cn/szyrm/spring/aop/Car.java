@@ -8,6 +8,7 @@ public class Car {
     public long driver(long time) throws InterruptedException {
         System.out.println("start driver");
         Thread.sleep(500);
+        int i = 10/0;
         return  System.currentTimeMillis() - time;
     }
 }

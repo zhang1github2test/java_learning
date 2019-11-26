@@ -3,7 +3,6 @@ package cn.szyrm.spring.aop;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,16 +24,16 @@ public class LogAspect {
     public void logReturn(){
         System.out.println("afterReturning .... ");
     }
-    @AfterThrowing(value = "pointCut()")
-    public void logException(){
-        System.out.println("afterThrowing ... ");
+    @AfterThrowing(value = "pointCut()",throwing="throwable")
+    public void logException(JoinPoint joinPoint , Throwable throwable){
+        System.out.println(joinPoint.getSignature().getName()+" afterThrowing ... " + "异常信息为:" + throwable);
     }
     @Around(value = "pointCut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.out.println("around before ...");
+        System.out.println(joinPoint.getSignature().getName() + "around before ...");
         Object proceed = joinPoint.proceed();
         System.out.println(proceed);
-        System.out.println("around  after...  ");
+        System.out.println(joinPoint.getSignature().getName() +"around  after...  ");
         return proceed;
     }
 }

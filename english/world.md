@@ -41,3 +41,7 @@
 * disposable:adj. 可任意处理的；可自由使用的；用完即可丢弃的
 * initializing:正在初始化  initializing  initializing  
 
+219-11-26
+
+* instantiation：实例化
+

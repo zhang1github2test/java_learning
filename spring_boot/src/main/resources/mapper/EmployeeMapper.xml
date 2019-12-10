@@ -1,0 +1,28 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.szyrm.cache.mapper.EmployeeMapper">
+    <insert id="insert">
+       INSERT INTO employee(lastName,email,gender,d_id) VALUES(#{lastName},#{email},#{gender},#{dId})
+    </insert>
+    <select id="getEmpByLastName" resultType="cn.szyrm.cache.bean.Employee">
+        SELECT * FROM employee WHERE lastName = #{lastName}
+    </select>
+    <select id="getEmpById" resultType="cn.szyrm.cache.bean.Employee">
+        SELECT * FROM employee WHERE id = #{id}
+    </select>
+    <update id="updateEmp" >
+        UPDATE employee
+        <set>
+            <if test="lastName != null">lastName=#{lastName},</if>
+            <if test="email != null">email=#{email},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="dId != null">d_id=#{dId},</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteEmpById">
+        DELETE FROM employee WHERE id=#{id}
+    </delete>
+</mapper>

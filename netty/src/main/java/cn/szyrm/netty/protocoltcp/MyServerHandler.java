@@ -44,7 +44,7 @@ public class MyServerHandler extends SimpleChannelInboundHandler<MessageProtocol
         MessageProtocol messageProtocol = new MessageProtocol();
         messageProtocol.setLen(responseLen);
         messageProtocol.setContent(responseContent2);
-
+        ctx.fireChannelRead(msg);
         ctx.writeAndFlush(messageProtocol);
 
 

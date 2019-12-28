@@ -217,8 +217,9 @@ class ApplicationTests {
      
           keyGenerator：key的生成器；可以自己指定key的生成器的组件id
                   key/keyGenerator：二选一使用;
-    
-     
+
+
+​     
            cacheManager：指定缓存管理器；或者cacheResolver指定获取解析器
      
            condition：指定符合条件的情况下才缓存；
@@ -332,3 +333,4 @@ public class Application {
   ```
 
 * 3、@
+

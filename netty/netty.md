@@ -1723,3 +1723,13 @@ public class MyMessageEncoder extends MessageToByteEncoder<MessageProtocol> {
 
 ```
 
+#### netty源码分析
+
+* #### netty启动过程源码解析
+
+  1、源码需要剖析到netty调用doBind方法，追踪到NioServerSocketChannel的doBind方法
+
+  2、并且要debug程序到NioEventLoop类的run代码，无限循环,在服务端运行
+
+* ss
+
